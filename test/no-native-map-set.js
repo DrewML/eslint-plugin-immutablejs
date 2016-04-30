@@ -1,5 +1,5 @@
 import test from 'ava';
-import rule from '../rules/no-native-map-set';
+import rule from '../lib/rules/no-native-map-set';
 import RuleTester from 'eslint/lib/testers/rule-tester';
 
 const parserOptions = {
@@ -57,6 +57,10 @@ test('"immutable-no-map-set" Rule', t => {
                 foo: instanceOf(Map),
                 bar: instanceOf(Set)
             }
+        `),
+        validCode(`
+            import immutable from 'immutable';
+            const { Map } = immutable;
         `)
     ];
 
