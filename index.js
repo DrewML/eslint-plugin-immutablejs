@@ -14,6 +14,9 @@ function importHasImmutableType(importDeclaration, type) {
 module.exports = context => {
     let hasMapImport = false;
     let hasSetImport = false;
+    // Todo: Use alias to track calls to immutable methods
+    // when require()'d
+    let immutableAlias = '';
 
     return {
         ImportDeclaration(node) {
@@ -24,6 +27,17 @@ module.exports = context => {
             if (importHasImmutableType(node, 'Set')) {
                 hasSetImport = true;
             }
+        },
+        CallExpression({ callee, parent, arguments:args = [] }) {
+            if (
+                callee.name !== 'require' ||
+                parent.type !== 'VariableDeclarator' ||
+                !(args[0] && args[0].value === 'immutable')
+            ) {
+                return;
+            }
+
+            immutableAlias = parent.id.name;
         },
         Identifier(node) {
             if (node.parent.type === 'ImportSpecifier') return;
