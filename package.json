@@ -1,7 +1,7 @@
 {
-  "name": "eslint-immutable-no-map-set",
+  "name": "eslint-plugin-immutablejs",
   "version": "0.1.0",
-  "description": "Do not allow usage of native ES6 Map/Set",
+  "description": "ESLint rules for projects using Immutable.js",
   "main": "index.js",
   "scripts": {
     "test": "ava",
@@ -9,9 +9,9 @@
   },
   "keywords": [
     "eslint",
+    "eslintplugin",
     "immutable",
-    "map",
-    "set",
+    "immutable.js",
     "lint"
   ],
   "author": "Andrew Levine",

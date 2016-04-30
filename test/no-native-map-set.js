@@ -1,5 +1,5 @@
 import test from 'ava';
-import rule from './index';
+import rule from '../rules/no-native-map-set';
 import RuleTester from 'eslint/lib/testers/rule-tester';
 
 const parserOptions = {
@@ -50,6 +50,13 @@ test('"immutable-no-map-set" Rule', t => {
             const Map = immute.Map;
             const a = Map();
             const b = Set();
+        `),
+        validCode(`
+            import { Map, Set } from 'immutable';
+            foo.propTypes = {
+                foo: instanceOf(Map),
+                bar: instanceOf(Set)
+            }
         `)
     ];
 
@@ -66,7 +73,10 @@ test('"immutable-no-map-set" Rule', t => {
             const b = Set();
         `),
         invalidCode(`
-            Map() && Set()
+            Map() && Set();
+        `),
+        invalidCode(`
+            new Map() && new Set();
         `)
     ];
 
