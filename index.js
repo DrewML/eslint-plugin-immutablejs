@@ -12,7 +12,7 @@ function importIsImmutable(importDeclaration) {
 
 function defaultImportName({ specifiers = [] }) {
     const specifier = specifiers.find(specifier => (
-        specifier.type === 'ImportDefaultSpecifier' //&& specifier.local.name
+        specifier.type === 'ImportDefaultSpecifier'
     ));
 
     return specifier && specifier.local.name;
@@ -21,8 +21,6 @@ function defaultImportName({ specifiers = [] }) {
 module.exports = context => {
     let hasMapImport = false;
     let hasSetImport = false;
-    // Todo: Use alias to track calls to immutable methods
-    // when require()'d or imported
     let immutableAlias = '';
 
     return {
@@ -37,7 +35,6 @@ module.exports = context => {
                 hasSetImport = true;
             }
 
-            console.log('alias is: ' + defaultImportName(node));
             immutableAlias = defaultImportName(node) || immutableAlias;
         },
         CallExpression({ callee, parent, arguments:args = [] }) {

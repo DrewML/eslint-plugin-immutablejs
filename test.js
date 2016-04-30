@@ -7,6 +7,12 @@ const parserOptions = {
     sourceType: 'module'
 };
 
+const errors = [{
+    message: 'Native ES6 Map is not allowed. Use Immutable.Map()'
+}, {
+    message: 'Native ES6 Set is not allowed. Use Immutable.Set()'
+}];
+
 function validCode(code) {
     return {
         code,
@@ -14,7 +20,15 @@ function validCode(code) {
     };
 }
 
-test('Rule Works', t => {
+function invalidCode(code) {
+    return {
+        code,
+        parserOptions,
+        errors
+    };
+}
+
+test('"immutable-no-map-set" Rule', t => {
     const ruleTester = new RuleTester();
 
     const valid = [
@@ -39,31 +53,22 @@ test('Rule Works', t => {
         `)
     ];
 
-    const invalid = [{
-        code: 'instanceOf(Map);',
-        parserOptions,
-        errors: [{
-            message: 'Native ES6 Map is not allowed. Use Immutable.Map()'
-        }]
-    }, {
-        code: 'instanceOf(Set)',
-        parserOptions,
-        errors: [{
-            message: 'Native ES6 Set is not allowed. Use Immutable.Set()'
-        }]
-    }, {
-        code: `
+    const invalid = [
+        invalidCode(`
+            foo.propTypes = {
+                foo: instanceOf(Map),
+                bar: instanceOf(Set)
+            }
+        `),
+        invalidCode(`
             import immute from 'immutable';
             const a = Map();
             const b = Set();
-        `,
-        parserOptions,
-        errors: [{
-            message: 'Native ES6 Map is not allowed. Use Immutable.Map()'
-        }, {
-            message: 'Native ES6 Set is not allowed. Use Immutable.Set()'
-        }]
-    }];
+        `),
+        invalidCode(`
+            Map() && Set()
+        `)
+    ];
 
     ruleTester.run('immutable-no-map-set', rule, { valid, invalid });
 });
