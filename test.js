@@ -19,25 +19,48 @@ test('Rule Works', t => {
 
     const valid = [
         validCode(`
-            import { Map } from 'immutable';
-            const a = Map();`
-        ),
+            import { Map, Set } from 'immutable';
+            const a = Map();
+            const b = Set();
+        `),
         validCode(`
-            import { Set } from 'immutable';
-            const a = Set();
+            import immute from 'immutable';
+            const Map = immute.Map;
+            const Set = immute.Set;
+            const a = Map();
+            const b = Set();
+        `),
+        validCode(`
+            const immute = require('immutable');
+            const Set = immute.Set;
+            const Map = immute.Map;
+            const a = Map();
+            const b = Set();
         `)
     ];
 
     const invalid = [{
         code: 'instanceOf(Map);',
-        parserOptions: { ecmaVersion: 6 },
+        parserOptions,
         errors: [{
             message: 'Native ES6 Map is not allowed. Use Immutable.Map()'
         }]
     }, {
         code: 'instanceOf(Set)',
-        parserOptions: { ecmaVersion: 6 },
+        parserOptions,
         errors: [{
+            message: 'Native ES6 Set is not allowed. Use Immutable.Set()'
+        }]
+    }, {
+        code: `
+            import immute from 'immutable';
+            const a = Map();
+            const b = Set();
+        `,
+        parserOptions,
+        errors: [{
+            message: 'Native ES6 Map is not allowed. Use Immutable.Map()'
+        }, {
             message: 'Native ES6 Set is not allowed. Use Immutable.Set()'
         }]
     }];

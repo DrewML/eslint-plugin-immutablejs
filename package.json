@@ -4,7 +4,8 @@
   "description": "Do not allow usage of native ES6 Map/Set",
   "main": "index.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "test:watch": "ava --watch"
   },
   "keywords": [
     "eslint",

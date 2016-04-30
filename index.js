@@ -1,43 +1,72 @@
+const IMMUTABLE_IMPORT_NAME = 'immutable';
+
 function importIncludesType({ specifiers = [] }, type) {
-    return specifiers.some(specifier => {
-        return (specifier.type === 'ImportSpecifier' && specifier.imported.name === type)
-    });
+    return specifiers.some(specifier => (
+        specifier.type === 'ImportSpecifier' && specifier.imported.name === type
+    ));
 }
 
-function importHasImmutableType(importDeclaration, type) {
-    const isImmutable = importDeclaration.source.value === 'immutable';
-    if (!isImmutable) return false;
+function importIsImmutable(importDeclaration) {
+    return importDeclaration.source.value === IMMUTABLE_IMPORT_NAME;
+}
 
-    return importIncludesType(importDeclaration, type);
+function defaultImportName({ specifiers = [] }) {
+    const specifier = specifiers.find(specifier => (
+        specifier.type === 'ImportDefaultSpecifier' //&& specifier.local.name
+    ));
+
+    return specifier && specifier.local.name;
 }
 
 module.exports = context => {
     let hasMapImport = false;
     let hasSetImport = false;
     // Todo: Use alias to track calls to immutable methods
-    // when require()'d
+    // when require()'d or imported
     let immutableAlias = '';
 
     return {
         ImportDeclaration(node) {
-            if (importHasImmutableType(node, 'Map')) {
+            if (!importIsImmutable(node)) return;
+
+            if (importIncludesType(node, 'Map')) {
                 hasMapImport = true;
             }
 
-            if (importHasImmutableType(node, 'Set')) {
+            if (importIncludesType(node, 'Set')) {
                 hasSetImport = true;
             }
+
+            console.log('alias is: ' + defaultImportName(node));
+            immutableAlias = defaultImportName(node) || immutableAlias;
         },
         CallExpression({ callee, parent, arguments:args = [] }) {
+            // var immutable = require('immutable');
             if (
-                callee.name !== 'require' ||
-                parent.type !== 'VariableDeclarator' ||
-                !(args[0] && args[0].value === 'immutable')
+                callee.name === 'require' &&
+                parent.type === 'VariableDeclarator' &&
+                (args[0] && args[0].value === IMMUTABLE_IMPORT_NAME)
+            ) {
+                immutableAlias = parent.id.name;;
+            }
+        },
+        VariableDeclarator(node) {
+            if (
+                node.init.type !== 'MemberExpression' ||
+                node.init.object.name !== immutableAlias ||
+                !['Map', 'Set'].some(name => name === node.id.name)
             ) {
                 return;
+            };
+
+            if (node.init.property.name === 'Map') {
+                hasMapImport = true;
             }
 
-            immutableAlias = parent.id.name;
+            if (node.init.property.name === 'Set') {
+                hasSetImport = true;
+            }
+
         },
         Identifier(node) {
             if (node.parent.type === 'ImportSpecifier') return;
