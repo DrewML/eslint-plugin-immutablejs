@@ -1,0 +1,22 @@
+{
+  "name": "eslint-immutable-no-map-set",
+  "version": "0.1.0",
+  "description": "Do not allow usage of native ES6 Map/Set",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava"
+  },
+  "keywords": [
+    "eslint",
+    "immutable",
+    "map",
+    "set",
+    "lint"
+  ],
+  "author": "Andrew Levine",
+  "license": "MIT",
+  "devDependencies": {
+    "ava": "^0.14.0",
+    "eslint": "^2.9.0"
+  }
+}
