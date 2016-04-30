@@ -2,6 +2,26 @@
 
 A set of [ESLint](http://eslint.org/) rules for projects using [`Immutable.js`](https://facebook.github.io/immutable-js/).
 
+## Usage
+
+### Install
+
+```
+npm install --save-dev eslint-plugin-immutablejs
+```
+
+### Configure
+
+In `.eslintrc`, add a `plugins` array, and add `immutablejs`.
+
+```json
+{
+    "plugins": ["immutablejs"]
+}
+```
+
+Then, enable any rule(s) you wish to use, in the form of `immutablejs/rule-name-here`.
+
 ## Rules
 
 ### no-native-map-set
